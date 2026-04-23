@@ -1531,7 +1531,7 @@
     // DATUM proxy — fetches from ob-datum-proxy running on the same host
     // Uses window.location.hostname so it works from any device on the network
     // ---------------------------------------------------------------------------
-    const DATUM_PROXY = `http://${window.location.hostname}:3001/api/stats`;
+    const DATUM_PROXY = `http://${window.location.hostname}/api/`;
 
     // Shared cache — polling loop reads from here
     let latestDatum = null;
