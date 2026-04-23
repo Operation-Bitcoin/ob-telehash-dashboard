@@ -1,12 +1,12 @@
 {
-  "name": "256 Foundation • Hashdash",
-  "short_name": "Hashdash",
-  "description": "Real-time hashrate visualizer and mining dashboard powered by Hydra Pool.",
+  "name": "OB Mining Dashboard",
+  "short_name": "OB Dash",
+  "description": "Real-time hashrate visualizer and mining dashboard powered by Operation Bitcoin Hydrapool.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#070b14",
-  "theme_color": "#070b14",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
   "icons": [
     {
       "src": "https://i.imgur.com/Fiot6qk.png",

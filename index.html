@@ -8,56 +8,60 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
   <meta name="referrer" content="no-referrer">
-  <title>256 Foundation • Hashdash</title>
+  <title>Operation Bitcoin • Mining Dashboard</title>
 
   <meta property="og:type" content="website">
-<meta property="og:url" content="https://dash.256f.org/">
-<meta property="og:title" content="256 Foundation • Hashdash">
-<meta property="og:description" content="Real-time hashrate visualizer and mining dashboard powered by Hydra Pool.">
-<meta property="og:image" content="https://dash.256f.org/og-image.jpg">
+<meta property="og:url" content="https://pool.operationbitcoin.io/dash">
+<meta property="og:title" content="Operation Bitcoin • Mining Dashboard">
+<meta property="og:description" content="Real-time hashrate visualizer and mining dashboard powered by Operation Bitcoin Hydrapool.">
+<meta property="og:image" content="og-image.jpg">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="https://dash.256f.org/">
-<meta name="twitter:title" content="256 Foundation • Hashdash">
-<meta name="twitter:description" content="Real-time hashrate visualizer and mining dashboard powered by Hydra Pool.">
-<meta name="twitter:image" content="https://dash.256f.org/og-image.jpg">
+<meta name="twitter:url" content="https://pool.operationbitcoin.io/dash">
+<meta name="twitter:title" content="Operation Bitcoin • Mining Dashboard">
+<meta name="twitter:description" content="Real-time hashrate visualizer and mining dashboard powered by Operation Bitcoin Hydrapool.">
+<meta name="twitter:image" content="og-image.jpg">
 
 
   <script src="https://unpkg.com/nostr-tools@2.19.4/lib/nostr.bundle.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Stardos+Stencil:wght@400;700&family=Nunito+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#070b14">
+  <meta name="theme-color" content="#0a0a0a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Hashdash">
+  <meta name="apple-mobile-web-app-title" content="OB Dashboard">
+  <!-- TODO: Replace with Operation Bitcoin logo -->
   <link rel="apple-touch-icon" href="https://i.imgur.com/Fiot6qk.png">
 
   <style>
     :root{
-      --bg0:#070b14;
-      --bg1:#0a1024;
+      --bg0:#0a0a0a;
+      --bg1:#111111;
       --text:rgba(255,255,255,.92);
       --muted:rgba(255,255,255,.62);
-      --accent:#38a6ff;
+      --accent:#f7941c;
       --good:#39d98a;
       --bad:#ff5b7a;
       --shadow: 0 22px 70px rgba(0,0,0,.55);
       --r:26px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --mono: 'JetBrains Mono', 'Courier New', monospace;
+      --sans: 'Nunito Sans', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --display: 'Stardos Stencil', display;
+      --accent-dim: rgba(247,148,28,.15);
     }
 
     html,body{
       height:100%;
       margin:0;
-      background:
-        radial-gradient(1200px 700px at 14% 18%, rgba(56,166,255,.32), transparent 55%),
-        radial-gradient(900px 700px at 82% 22%, rgba(140,103,255,.26), transparent 55%),
-        radial-gradient(900px 900px at 55% 92%, rgba(37,196,255,.14), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
+      background-color: var(--bg0);
+      background-image:
+        linear-gradient(rgba(247,148,28,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(247,148,28,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
       color:var(--text);
       font-family: var(--sans);
       overflow-x:hidden;
@@ -65,34 +69,68 @@
       text-size-adjust: 100%;
     }
 
-    a{ color: rgba(170,220,255,.95); text-decoration: none; }
+    a{ color: rgba(247,178,80,.95); text-decoration: none; }
     a:hover{ text-decoration: underline; }
 
     .wrap{
       max-width: 1240px;
       margin: 0 auto;
       padding: 28px 18px 34px;
+      position: relative;
+      z-index: 3;
     }
 
     /* HEADER */
     .top{
       display:flex;
       align-items:center;
-      gap:16px;
-      margin-bottom:18px;
+      gap:20px;
+      padding:20px 0 16px;
+      margin-bottom:32px;
+      position:relative;
+    }
+    @keyframes scan {
+      0% { transform: translateY(-100%); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(2000%); opacity: 0; }
+    }
+    .top::after {
+      content: none;
     }
 
     .logo{
-      width:75px;height:75px;border-radius:18px;
-      background: #ffffff;
-      box-shadow: 0 18px 55px rgba(56,166,255,.25);
-      border: 1px solid rgba(255,255,255,.18);
+      width:48px;height:48px;border-radius:4px;
       flex: 0 0 auto;
       object-fit: contain;
-      padding: 6px;
-      box-sizing: border-box;
     }
 
+    .title-block{ flex: 1; }
+    .title-block .callsign {
+      font-family: var(--display);
+      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      color: var(--accent);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    .title-block .subtitle {
+      font-family: var(--display);
+      font-size: clamp(.7rem, 1.5vw, .85rem);
+      color: var(--muted);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .status-block {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    /* Legacy title styles (unused but kept for safety) */
     .title{
       display:flex;
       flex-direction:column;
@@ -101,6 +139,7 @@
     }
 
     h1{
+      font-family: var(--display);
       font-size: 34px;
       line-height: 1.05;
       margin:0;
@@ -134,19 +173,17 @@
     }
 
     #lastUpdate{
-      width: 36ch;
+      font-family: var(--mono);
+      font-size: .7rem;
     }
     #pill-status {
-      width: calc(9ch - 4px);
-    }
-    #pill-powered {
-      width: calc(22ch - 4px);
+      white-space: nowrap;
     }
 
     .dot{
       width:8px;height:8px;border-radius:999px;
-      background: var(--good);
-      box-shadow: 0 0 0 4px rgba(57,217,138,.15);
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(247,148,28,.15);
     }
     .dot.pulse {
       animation: pulse 2s infinite;
@@ -158,9 +195,9 @@
     }
 
     @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(57, 217, 138, 0.4); }
-      70% { box-shadow: 0 0 0 6px rgba(57, 217, 138, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(57, 217, 138, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(247, 148, 28, 0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(247, 148, 28, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(247, 148, 28, 0); }
     }
 
     /* GRID SYSTEM */
@@ -171,23 +208,17 @@
     }
 
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.045));
-      border: 1px solid rgba(255,255,255,.13);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
       position:relative;
       overflow:hidden;
-      backdrop-filter: blur(16px);
+      backdrop-filter: none;
     }
 
     .card::before{
-      content:"";
-      position:absolute; inset:-1px;
-      background:
-        radial-gradient(600px 180px at 30% 0%, rgba(56,166,255,.20), transparent 60%),
-        radial-gradient(520px 260px at 92% 12%, rgba(140,103,255,.16), transparent 60%);
-      pointer-events:none;
-      opacity:.9;
+      content: none;
     }
 
     .cardInner{
@@ -196,12 +227,18 @@
     }
 
     .sectionTitle{
-      font-family: var(--mono);
-      letter-spacing: .32em;
+      font-family: var(--display);
+      font-size: .7rem;
+      letter-spacing: .25em;
+      color: var(--accent);
       text-transform: uppercase;
-      font-size: 14px;
-      color: rgba(255,255,255,.55);
-      margin: 0 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 20px;
+    }
+    .sectionTitle::after{
+      content: none;
     }
 
     .headRow{
@@ -233,39 +270,46 @@
 
     .kpiTile{
       grid-column: span 3;
-      min-height: 118px;
-      border-radius: 22px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      overflow:hidden;
       position: relative;
-      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      padding: 20px 24px;
+      background: transparent;
+      min-width: 140px;
+      border: none;
+      border-radius: 0;
+      overflow: visible;
     }
-    .kpiTile:hover{
-      transform: translateY(-2px);
-      border-color: rgba(255,255,255,.25);
-      background: rgba(255,255,255,.08);
+    /* Corner brackets — top-left */
+    .kpiTile::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 14px; height: 14px;
+      border-top: 2px solid var(--accent);
+      border-left: 2px solid var(--accent);
+    }
+    /* Corner brackets — bottom-right */
+    .kpiTile::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 14px; height: 14px;
+      border-bottom: 2px solid var(--accent);
+      border-right: 2px solid var(--accent);
     }
 
-    .kpiTileInner{ padding:16px 16px 14px; position:relative; z-index:2; }
+    .kpiTileInner{ position:relative; z-index:2; }
 
     .kpiBgIcon{
-      position:absolute;
-      right: -10px;
-      bottom: -10px;
-      font-size: 80px;
-      color: rgba(255,255,255,.03);
-      transform: rotate(-15deg);
-      pointer-events: none;
-      z-index: 1;
+      display: none;
     }
 
     .kpiTile .label{
-      color: rgba(255,255,255,.62);
-      font-family: var(--mono);
-      font-size: 14px; 
-      letter-spacing:.04em;
-      margin:0 0 8px;
+      font-family: var(--display);
+      font-size: .6rem;
+      letter-spacing: .2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin: 0 0 6px;
       display:flex;
       align-items:center;
       gap:8px;
@@ -273,25 +317,27 @@
 
     .kpiTile .label i {
       color: var(--accent);
-      font-size: 14px;
+      font-size: 12px;
       opacity: 0.8;
     }
 
     .kpiTile .value{
+      font-family: var(--mono);
       font-weight: 700;
-      font-size: 52px;
+      font-size: clamp(2rem, 5vw, 3rem);
       line-height: 1;
       margin:0;
-      letter-spacing: .5px;
+      color: var(--text);
+      text-shadow: 0 0 20px rgba(247,148,28,.3);
     }
 
-    .kpiTile.small .value{ font-size: 48px; }
+    .kpiTile.small .value{ font-size: clamp(2rem, 5vw, 3rem); }
 
     .kpiTile .value .unit{
-      font-size: .55em;
-      color: rgba(255,255,255,.78);
-      margin-left: 8px;
-      letter-spacing:.02em;
+      font-family: var(--mono);
+      font-size: .9rem;
+      color: var(--accent);
+      margin-left: 4px;
     }
 
     /* Charts Row */
@@ -314,7 +360,7 @@
 
     .canvasWrap{
       border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.10);
+      background: rgba(247,148,28,.03);
     }
 
     .pieWrap{
@@ -406,19 +452,18 @@
 
     #userFilter{
       width: 100%;
-      /* height: 56px; */
       height:45px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,.14);
+      background: var(--bg1);
       color: rgba(255,255,255,.88);
       font-family: var(--mono);
       font-size: 16px;
       padding: 0 18px 0 50px;
       outline: none;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 14px 44px rgba(0,0,0,.18);
       box-sizing: border-box;
+      transition: border-color .2s;
     }
 
     #userFilter::placeholder{
@@ -426,8 +471,8 @@
     }
 
     #userFilter:focus{
-      border-color: rgba(56,166,255,.30);
-      background: rgba(255,255,255,.075);
+      border-bottom-color: var(--accent);
+      box-shadow: 0 1px 0 0 rgba(247,148,28,.3);
     }
 
     .filterBtn{
@@ -435,7 +480,7 @@
       padding: 0 22px;
       border-radius: 18px;
       border: 1px solid rgba(255,255,255,.14);
-      background: rgba(140,103,255,.18);
+      background: rgba(247,148,28,.18);
       color: rgba(255,255,255,.86);
       font-family: var(--mono);
       font-size: 13px;
@@ -449,7 +494,7 @@
     }
 
     .filterBtn:hover{
-      background: rgba(140,103,255,.24);
+      background: rgba(247,148,28,.24);
       border-color: rgba(255,255,255,.20);
       transform: translateY(-1px);
     }
@@ -502,7 +547,7 @@
     }
 
     .chicToggle input:checked + .track {
-      background: rgba(56,166,255,.15);
+      background: rgba(247,148,28,.15);
       border-color: var(--accent);
     }
 
@@ -748,6 +793,10 @@
     .centerTitle{
       width:100%;
       text-align:center;
+      justify-content: center;
+    }
+    .centerTitle::after{
+      display: none;
     }
 
     .copyLabel{
@@ -813,12 +862,12 @@
       grid-template-columns: 70px 120px 1fr;
       gap: 24px;
       padding: 12px 24px;
-      color: rgba(255,255,255,.5);
-      font-family: var(--mono);
-      font-size: 13px;
-      letter-spacing: .06em;
+      color: var(--accent);
+      font-family: var(--display);
+      font-size: .6rem;
+      letter-spacing: .2em;
       text-transform: uppercase;
-      border-bottom: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid rgba(247,148,28,.3);
     }
 
     .leaderboardRow{
@@ -828,7 +877,8 @@
       padding: 14px 24px;
       align-items: center;
       border-bottom: 1px solid rgba(255,255,255,.05);
-      transition: background 150ms ease;
+      border-left: 2px solid transparent;
+      transition: background 150ms ease, border-color .15s;
     }
 
     .lbWhen{
@@ -839,7 +889,8 @@
     }
 
     .leaderboardRow:hover{
-      background: rgba(255,255,255,.03);
+      background: rgba(247,148,28,.04);
+      border-left: 2px solid var(--accent);
     }
 
     .leaderboardRow:last-child{
@@ -862,7 +913,7 @@
 
     .lbDiff{
       font-family: var(--mono);
-      font-size: 14px;
+      font-size: .8rem;
       font-weight: 400;
       letter-spacing: 0.01em;
     }
@@ -910,8 +961,8 @@
     }
 
     @keyframes flashHighlight{
-      0%{ background: rgba(56,166,255,0.35); }
-      50%{ background: rgba(56,166,255,0.35); }
+      0%{ background: rgba(247,148,28,0.35); }
+      50%{ background: rgba(247,148,28,0.35); }
       100%{ background: rgba(255,255,255,.06); }
     }
 
@@ -1083,39 +1134,29 @@
 
       /* Header Layout */
       .top {
-        align-items: flex-start; /* Aligns logo to top of text */
+        flex-wrap: wrap;
         gap: 12px;
+        padding: 16px 0 12px;
         margin-bottom: 22px;
       }
 
       /* Resized Logo */
       .logo {
-        display: block; /* Unhide */
-        width: 48px;
-        height: 48px;
-        border-radius: 12px; /* Tighter radius for mobile */
-        padding: 4px;
-        box-shadow: 0 8px 20px rgba(56,166,255,.20); /* Softer shadow */
+        width: 36px;
+        height: 36px;
       }
 
-      /* Title area */
-      .title {
-        min-width: 0;
-        flex: 1 1 auto;
+      .title-block .callsign {
+        font-size: 1rem;
       }
-
-      h1 { 
-        font-size: 22px; /* Balanced size */
-        white-space: normal;
-        overflow: visible;
-        line-height: 1.15;
+      .title-block .subtitle {
+        font-size: .65rem;
       }
-
-      /* FIX 1: Pills WRAP naturally instead of scrolling off-screen */
-      .sub {
-        /* margin-top: 8px; */
-        flex-wrap: wrap; /* Wrap allows multiple lines */
-        gap: 8px; /* Tighter gap for mobile */
+      .status-block {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: 100%;
       }
 
       /* Make pills slightly more compact */
@@ -1126,16 +1167,12 @@
       }
 
       #pill-status {
-        width:9ch;
-      }
-
-      #pill-powered {
-        width:22ch;
+        width:auto;
       }
 
       /* Rest of mobile styles */
       .kpiTile{ grid-column: span 12; }
-      .kpiTile .value{ font-size: 54px; }
+      .kpiTile .value{ font-size: clamp(2rem, 5vw, 3rem); }
       .canvasWrap  { height: 280px }
       .pieWrap { 
         /* i like the small pie chart but if there are more than 5 lines of miners the legend gets cut off */
@@ -1187,20 +1224,112 @@
         display:block;
       }
     }
+    /* =========================
+        FULL-PAGE RADAR SWEEP
+    ========================= */
+    #page-scan-bar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(to right, transparent 0%, rgba(247,148,28,.0) 15%, rgba(247,148,28,.35) 40%, rgba(247,148,28,.55) 50%, rgba(247,148,28,.35) 60%, rgba(247,148,28,.0) 85%, transparent 100%);
+      box-shadow: 0 0 6px 1px rgba(247,148,28,.3);
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    /* =========================
+        WORLD MAP OVERLAY
+    ========================= */
+    #world-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    #world-map-svg {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+    }
+    #world-map-svg .land-path {
+      fill: none;
+      stroke: rgba(247,148,28,.11);
+      stroke-width: 0.35;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+    .map-node {
+      fill: rgba(247,148,28,0);
+      r: 3;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .map-node.pinging {
+      animation: nodePing 1.8s ease-out forwards;
+    }
+    @keyframes nodePing {
+      0%   { transform: scale(1); fill: rgba(247,148,28,.95); opacity: 1; }
+      50%  { transform: scale(3); fill: rgba(247,148,28,.5);  opacity: 0.6; }
+      100% { transform: scale(6); fill: rgba(247,148,28,0);   opacity: 0; }
+    }
+
   </style>
 </head>
 
 <body>
+  <div id="page-scan-bar"></div>
+  <div id="world-overlay">
+    <!-- Equirectangular projection: x=(lon+180)/360*1000, y=(90-lat)/180*500 -->
+    <svg id="world-map-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <!-- Land paths injected by initWorldMap() -->
+
+      <!-- Node dots — cx/cy use same projection, delay = y*0.028s -->
+      <!-- Seattle    47.6N,122.3W --><circle class="map-node" cx="160" cy="118" style="--d:3.3s"/>
+      <!-- Vancouver  49.3N,123.1W --><circle class="map-node" cx="158" cy="114" style="--d:3.2s"/>
+      <!-- San Fran   37.8N,122.4W --><circle class="map-node" cx="160" cy="145" style="--d:4.1s"/>
+      <!-- Los Angeles 34N,118W    --><circle class="map-node" cx="172" cy="156" style="--d:4.4s"/>
+      <!-- Denver     39.7N,105W   --><circle class="map-node" cx="208" cy="140" style="--d:3.9s"/>
+      <!-- Chicago    41.9N,87.6W  --><circle class="map-node" cx="257" cy="134" style="--d:3.7s"/>
+      <!-- Toronto    43.7N,79.4W  --><circle class="map-node" cx="279" cy="129" style="--d:3.6s"/>
+      <!-- New York   40.7N,74W    --><circle class="map-node" cx="294" cy="137" style="--d:3.8s"/>
+      <!-- Miami      25.8N,80.2W  --><circle class="map-node" cx="277" cy="178" style="--d:5.0s"/>
+      <!-- Mexico City 19.4N,99.1W --><circle class="map-node" cx="225" cy="196" style="--d:5.5s"/>
+      <!-- Bogota     4.7N,74W     --><circle class="map-node" cx="294" cy="237" style="--d:6.6s"/>
+      <!-- Sao Paulo  23.5S,46.6W  --><circle class="map-node" cx="371" cy="315" style="--d:8.8s"/>
+      <!-- Buenos Ar  34.6S,58.4W  --><circle class="map-node" cx="339" cy="346" style="--d:9.7s"/>
+      <!-- London     51.5N,0.1W   --><circle class="map-node" cx="500" cy="107" style="--d:3.0s"/>
+      <!-- Amsterdam  52.4N,4.9E   --><circle class="map-node" cx="514" cy="104" style="--d:2.9s"/>
+      <!-- Frankfurt  50.1N,8.7E   --><circle class="map-node" cx="521" cy="111" style="--d:3.1s"/>
+      <!-- Madrid     40.4N,3.7W   --><circle class="map-node" cx="490" cy="138" style="--d:3.9s"/>
+      <!-- Moscow     55.8N,37.6E  --><circle class="map-node" cx="604" cy="95"  style="--d:2.7s"/>
+      <!-- Lagos      6.5N,3.4E    --><circle class="map-node" cx="509" cy="232" style="--d:6.5s"/>
+      <!-- Nairobi    1.3S,36.8E   --><circle class="map-node" cx="602" cy="254" style="--d:7.1s"/>
+      <!-- Cape Town  33.9S,18.4E  --><circle class="map-node" cx="551" cy="344" style="--d:9.6s"/>
+      <!-- Dubai      25.2N,55.3E  --><circle class="map-node" cx="654" cy="179" style="--d:5.0s"/>
+      <!-- Mumbai     19.1N,72.9E  --><circle class="map-node" cx="703" cy="197" style="--d:5.5s"/>
+      <!-- Singapore  1.4N,103.8E  --><circle class="map-node" cx="788" cy="247" style="--d:6.9s"/>
+      <!-- Hong Kong  22.3N,114.2E --><circle class="map-node" cx="817" cy="188" style="--d:5.3s"/>
+      <!-- Tokyo      35.7N,139.7E --><circle class="map-node" cx="888" cy="151" style="--d:4.2s"/>
+      <!-- Sydney     33.9S,151.2E --><circle class="map-node" cx="920" cy="344" style="--d:9.6s"/>
+    </svg>
+  </div>
   <div class="wrap">
     <div class="top">
-      <img src="https://i.imgur.com/Fiot6qk.png" class="logo" alt="256 Foundation">
-      <div class="title">
-        <h1>256 Foundation &nbsp;<span style="font-size:80%"><i class="fa-solid fa-screwdriver-wrench"></i></span>&nbsp; Hashdash</h1>
-        <div class="sub">
-          <span class="pill" id="pill-status"><span id="statusDot" class="dot pulse"></span><span id="statusText">Connecting</span></span>
-          <span class="pill" id="pill-powered">Powered by <a href="https://hydrapool.org/" target="_blank" rel="noopener noreferrer"><b>Hydra Pool</b></a></span>
-          <span class="pill" id="lastUpdate">Last Update: —</span>
-        </div>
+      <img src="https://operationbitcoin.io/wp-content/uploads/2023/10/OB-logo.png" class="logo" alt="Operation Bitcoin">
+      <div class="title-block">
+        <div class="callsign">Operation Bitcoin</div>
+        <div class="subtitle">Mining Command Center</div>
+      </div>
+      <div class="status-block">
+        <span class="pill" id="pill-status"><span id="statusDot" class="dot pulse"></span><span id="statusText">ESTABLISHING...</span></span>
+        <span class="pill" id="lastUpdate" style="font-family:var(--mono);font-size:.7rem">LAST PING: —</span>
       </div>
     </div>
 
@@ -1209,14 +1338,14 @@
       <div class="card overview">
         <div class="cardInner">
           <div class="headRow">
-            <div class="sectionTitle">Overview</div>
+            <div class="sectionTitle">SITREP</div>
           </div>
 
           <div class="kpiGrid">
             <div class="kpiTile small">
               <i class="fa-solid fa-bolt kpiBgIcon"></i>
               <div class="kpiTileInner">
-                <div class="label"><i class="fa-solid fa-bolt"></i> HASHRATE (5M)</div>
+                <div class="label"><i class="fa-solid fa-bolt"></i> HASH POWER <span style="opacity:.5;font-size:.85em">(Hashrate 5m)</span></div>
                 <div class="value"><span id="hash5m">—</span><span class="unit" id="hash5mUnit"></span></div>
               </div>
             </div>
@@ -1224,7 +1353,7 @@
             <div class="kpiTile small">
               <i class="fa-solid fa-stopwatch kpiBgIcon"></i>
               <div class="kpiTileInner">
-                <div class="label"><i class="fa-solid fa-stopwatch"></i> AVG HASHRATE (1H)</div>
+                <div class="label"><i class="fa-solid fa-stopwatch"></i> SUSTAINED OUTPUT <span style="opacity:.5;font-size:.85em">(Avg Hashrate 1h)</span></div>
                 <div class="value"><span id="hash1h">—</span><span class="unit" id="hash1hUnit"></span></div>
               </div>
             </div>
@@ -1232,7 +1361,7 @@
             <div class="kpiTile">
               <i class="fa-solid fa-users kpiBgIcon"></i>
               <div class="kpiTileInner">
-                <div class="label"><i class="fa-solid fa-users"></i> ACTIVE USERS</div>
+                <div class="label"><i class="fa-solid fa-users"></i> OPERATORS <span style="opacity:.5;font-size:.85em">(Active Users)</span></div>
                 <div class="value"><span id="usersNow" style="padding-left:20px">—</span><span class="unit"></span></div>
               </div>
             </div>
@@ -1240,7 +1369,7 @@
             <div class="kpiTile">
               <i class="fa-solid fa-microchip kpiBgIcon"></i>
               <div class="kpiTileInner">
-                <div class="label"><i class="fa-solid fa-microchip"></i> ACTIVE WORKERS</div>
+                <div class="label"><i class="fa-solid fa-microchip"></i> ACTIVE ASSETS <span style="opacity:.5;font-size:.85em">(Workers)</span></div>
                 <div class="value"><span id="workersOnline" style="padding-left:20px">—</span><span class="unit"></span></div>
               </div>
             </div>
@@ -1252,7 +1381,7 @@
         <div class="card trendCard">
           <div class="cardInner">
             <div class="headRow">
-              <div class="sectionTitle">Hashrate History</div>
+              <div class="sectionTitle">POWER GRID HISTORY</div>
               <div class="meta" id="trendMeta">Last 6h</div>
             </div>
 
@@ -1265,7 +1394,7 @@
         <div class="card pieCard">
           <div class="cardInner">
             <div class="headRow">
-              <div class="sectionTitle">Miner Share</div>
+              <div class="sectionTitle">OPERATOR ALLOCATION</div>
               <div class="meta" id="pieMeta">Last 5m</div>
             </div>
 
@@ -1283,12 +1412,13 @@
         <div class="card">
           <div class="cardInner" style="padding:22px 30px 40px 30px">
             <div class="headRow">
-              <div class="sectionTitle centerTitle">Hashrate Donations</div>
+              <div class="sectionTitle centerTitle">HASHRATE SUPPORT</div>
             </div>
 
+            <!-- TODO: Replace with live Operation Bitcoin Hydrapool stratum endpoint -->
             <div class="copyLabel">Point your hashrate to:</div>
-            <div class="copyField" data-copy="stratum+tcp://pool.256foundation.org:3333">
-              <span>stratum+tcp://pool.256foundation.org:3333</span>
+            <div class="copyField" data-copy="stratum+tcp://pool.operationbitcoin.io:3333">
+              <span>stratum+tcp://pool.operationbitcoin.io:3333</span>
               <i class="fa-regular fa-copy"></i>
             </div>
 
@@ -1303,18 +1433,19 @@
         <div class="card">
           <div class="cardInner" style="padding:22px 30px 40px 30px">
             <div class="headRow">
-              <div class="sectionTitle centerTitle">Bitcoin Donations</div>
+              <div class="sectionTitle centerTitle">MISSION SUPPORT</div>
             </div>
 
+            <!-- TODO: Replace with Operation Bitcoin donation addresses -->
             <div class="copyLabel">Send bitcoin directly to:</div>
-            <div class="copyField" data-copy="bc1qce93hy5rhg02s6aeu7mfdvxg76x66pqqtrvzs3">
-              <span>bc1qce93hy5rhg02s6aeu7mfdvxg76x66pqqtrvzs3</span>
+            <div class="copyField" data-copy="bc1q_PLACEHOLDER_OB_ADDRESS">
+              <span>bc1q_PLACEHOLDER_OB_ADDRESS</span>
               <i class="fa-regular fa-copy"></i>
             </div>
 
             <div class="copyLabel" style="padding-top:10px">Or donate via Lightning to:</div>
-            <div class="copyField" data-copy="donate@256f.org">
-              <span>donate@256f.org</span>
+            <div class="copyField" data-copy="donate@operationbitcoin.io">
+              <span>donate@operationbitcoin.io</span>
               <i class="fa-regular fa-copy"></i>
             </div>
           </div>
@@ -1328,13 +1459,13 @@
           <div class="usersContentConstrainer">
 
             <div class="usersHeadRow">
-              <div class="sectionTitle centerTitle" id="users-workers">Users + Workers</div>
+              <div class="sectionTitle centerTitle" id="users-workers">ACTIVE OPERATORS</div>
               <div class="toggleContainer">
                 <label class="chicToggle">
                   <input type="checkbox" id="groupUsersCheck" checked> <span class="track">
                     <span class="thumb"></span>
                   </span>
-                  <span class="label">Group</span>
+                  <span class="label">GROUP BY OPERATOR</span>
                 </label>
 
                 <label class="chicToggle">
@@ -1342,7 +1473,7 @@
                   <span class="track">
                     <span class="thumb"></span>
                   </span>
-                  <span class="label">Show Idle</span>
+                  <span class="label">SHOW IDLE ASSETS</span>
                 </label>
               </div>
             </div>
@@ -1351,7 +1482,7 @@
               <div class="filterField">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input id="userFilter" type="text" autocomplete="off" spellcheck="false"
-                  placeholder="filter by user / worker" />
+                  placeholder="SEARCH OPERATORS / ASSETS" />
               </div>
               <button id="filterReset" type="button" class="filterBtn" disabled>CLEAR</button>
             </div>
@@ -1369,12 +1500,12 @@
         <div class="cardInner">
           <div class="leaderboardContent">
             <div class="usersHeadRow">
-              <div class="sectionTitle centerTitle">Difficulty Leaderboard</div>
+              <div class="sectionTitle centerTitle">TOP OPERATORS</div>
             </div>
             <div class="leaderboardHeader" id="leaderboardHeader">
               <div>Rank</div>
-              <div id="lbDiffHeader">Difficulty</div>
-              <div>User<span class="lbWorkerName"> • Worker</span></div>
+              <div id="lbDiffHeader">BEST SHARE</div>
+              <div>OPERATOR<span class="lbWorkerName"> • ASSETS</span></div>
             </div>
             <div id="leaderboardList"></div>
           </div>
@@ -1383,15 +1514,47 @@
 
     </div><div class="narrowBlock">
       <div style="text-align:center; margin:0 auto; margin-top:60px">
-        <span>Made with ❤️ by <a href="https://x.com/d_plus__plus/" target="_blank"><b>D++</b></a> for the <a href="https://256foundation.org/" target="_blank" rel="noopener noreferrer"><b>256 Foundation</b></a></span>
-        <div style="padding-top:4px">Powered by <a href="https://hydrapool.org/" target="_blank" rel="noopener noreferrer"><b>Hydra Pool</b></a></div>
+        <span>Operation Bitcoin • Freedom Tech for Veterans</span>
+        
       </div>
     </div>
 
   </div><div id="hoverTip"></div>
 
   <script>
-    const background = "#07090b"; // for favicons
+    const background = "#0a0a0a"; // for favicons
+
+    // TODO: Replace with live Operation Bitcoin Hydrapool endpoint
+    const HYDRAPOOL_API = 'https://pool.operationbitcoin.io/api'; // placeholder
+
+    // ---------------------------------------------------------------------------
+    // DATUM proxy — fetches from ob-datum-proxy running on the same host
+    // Uses window.location.hostname so it works from any device on the network
+    // ---------------------------------------------------------------------------
+    const DATUM_PROXY = `http://${window.location.hostname}:3001/api/stats`;
+
+    // Shared cache — polling loop reads from here
+    let latestDatum = null;
+
+    async function fetchDatumStats() {
+      try {
+        const res = await fetch(DATUM_PROXY);
+        if (!res.ok) return;
+        const d = await res.json();
+        if (d.error) return;
+        latestDatum = d;
+      } catch (e) {
+        // Proxy not reachable — keep using last cached value
+      }
+    }
+
+    // Refresh every 10s so data is fresh when the polling loop reads it
+    fetchDatumStats();
+    setInterval(fetchDatumStats, 10_000);
+    const HYDRAPOOL_WS  = 'wss://pool.operationbitcoin.io/ws';    // placeholder
+
+    // TODO: Replace with Operation Bitcoin Nostr pubkey
+    const OB_POOL_PUBKEY = 'PLACEHOLDER_OB_NOSTR_PUBKEY';
     /* =========================
         SURGICAL NOSTR ENGINE (NIP-19 + NIP-05)
     ========================= */
@@ -1818,8 +1981,8 @@ async function resolveNIP05(fullname) {
         CONFIG
     ========================= */
 
-  // const PROM_BASE = "https://bolt12.dplus.plus/256"; 
-const PROM_BASE = "https://pool.256foundation.org";
+  // TODO: Replace with live Operation Bitcoin Hydrapool endpoint
+const PROM_BASE = HYDRAPOOL_API; // placeholder — was "https://pool.256foundation.org"
 
 
   
@@ -1997,7 +2160,14 @@ const PROM_BASE = "https://pool.256foundation.org";
     }
 
     function fmtDateTime(d){
-      return d.toLocaleString([], { year:"numeric", month:"numeric", day:"numeric", hour:"numeric", minute:"2-digit", second:"2-digit" });
+      const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+      const day    = String(d.getUTCDate()).padStart(2,'0');
+      const mon    = months[d.getUTCMonth()];
+      const yr     = String(d.getUTCFullYear()).slice(-2);
+      const hh     = String(d.getUTCHours()).padStart(2,'0');
+      const mm     = String(d.getUTCMinutes()).padStart(2,'0');
+      const ss     = String(d.getUTCSeconds()).padStart(2,'0');
+      return `${day}${mon}${yr} ${hh}:${mm}:${ss}Z`;
     }
 
     // Upgrade http:// URLs to https:// to avoid mixed content warnings
@@ -2261,7 +2431,7 @@ const PROM_BASE = "https://pool.256foundation.org";
 
     function niceColorPalette(n){
       const base = [
-        "#38a6ff","#8c67ff","#39d98a","#ffd36a","#ff5b7a","#25c4ff",
+        "#f7941c","#8c67ff","#39d98a","#ffd36a","#ff5b7a","#25c4ff",
         "#ff8a3d","#7cf7ff","#b7ff6a","#ff63d8","#7a5cff","#00f5a0",
         "#ffe66a","#ff4d6d","#4de2ff","#9dff57"
       ];
@@ -2618,10 +2788,10 @@ const PROM_BASE = "https://pool.256foundation.org";
 
       function trendGradient(chart){
         const area = chart.chartArea;
-        if (!area) return "rgba(56,166,255,0.18)";
+        if (!area) return "rgba(247,148,28,0.18)";
         const g = chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
-        g.addColorStop(0, "rgba(56,166,255,0.55)");
-        g.addColorStop(1, "rgba(56,166,255,0.00)");
+        g.addColorStop(0, "rgba(247,148,28,0.55)");
+        g.addColorStop(1, "rgba(247,148,28,0.00)");
         return g;
       }
 
@@ -2974,21 +3144,29 @@ callback: function(v){ return v.toLocaleString(undefined, {maximumFractionDigits
     async function refreshOverview(){
       $("#err").text("");
 
+      // TODO: Replace placeholder data with live Hydrapool API calls
+      // Placeholder: pool hashrate 125.4 TH/s, active miners 12, workers 47
       try{
-        const upResp = await promQuery("up");
-        const online = (scalarValue(upResp) === 1);
+        // const upResp = await promQuery("up");
+        // const online = (scalarValue(upResp) === 1);
+        const online = true; // placeholder
 
         $("#statusDot").toggleClass("bad", !online);
-        $("#statusText").text(online ? "Online" : "Offline");
+        $("#statusText").text(online ? "COMMS LIVE" : "COMMS DOWN");
 
-        const hash5mResp = await promQuery(promql.hashrate5m);
-        const hash5mHps = scalarValue(hash5mResp);
+        // HASH POWER — live from DATUM proxy, fallback to placeholder
+        const hash5mHps = (latestDatum && latestDatum.hashrate != null)
+          ? latestDatum.hashrate * 1e12
+          : 125.4e12;
 
         const hr = humanHashrateFromHps(hash5mHps);
         $("#hash5m").text(hr.value);
         $("#hash5mUnit").text(hr.unit);
 
-        const hash1hTH = await refreshHash1hFromSamples();
+        // SUSTAINED OUTPUT — same source until 1h avg endpoint available
+        const hash1hTH = (latestDatum && latestDatum.hashrate != null)
+          ? latestDatum.hashrate
+          : 122.8;
         if (isFinite(hash1hTH)){
           const hr1 = humanHashrateFromHps(hash1hTH * 1e12);
           $("#hash1h").text(hr1.value);
@@ -2998,15 +3176,18 @@ callback: function(v){ return v.toLocaleString(undefined, {maximumFractionDigits
           $("#hash1hUnit").text("");
         }
 
-        const usersNowResp = await promQuery(promql.usersHashrate5mActiveCount);
-        $("#usersNow").text(fmtInt(scalarValue(usersNowResp)));
+        // OPERATORS — live from DATUM proxy, fallback to placeholder
+        const usersNow = (latestDatum && latestDatum.connections != null)
+          ? latestDatum.connections
+          : 12;
+        $("#usersNow").text(fmtInt(usersNow));
 
         const now = new Date();
-        $("#lastUpdate").text("Last Update: " + fmtDateTime(now));
+        $("#lastUpdate").text("LAST PING: " + fmtDateTime(now));
 
       } catch (e){
         $("#statusDot").addClass("bad");
-        $("#statusText").text("Error");
+        $("#statusText").text("SIGNAL LOST");
         $("#err").text("overview error: " + (e?.statusText || e?.message || "unknown"));
       }
     }
@@ -3014,78 +3195,52 @@ callback: function(v){ return v.toLocaleString(undefined, {maximumFractionDigits
     async function refreshUsersWorkersAndPie(){
       $("#err").text("");
 
+      // TODO: Replace placeholder data with live Hydrapool API calls
       try{
-        const totalsResp = await promQuery(promql.usersHashrate5m);
-        const totalsSeries = series(totalsResp);
-
-        const workersPick = await promQueryFirst([
-          promql.usersWorkers5m_workername,
-          promql.usersWorkers5m_worker,
-          promql.usersWorkers5m_rig,
-          promql.usersWorkers5m_name
-        ]);
-        const workersSeries = workersPick.resp ? series(workersPick.resp) : [];
-
-        const lastPick = await promQueryFirst([
-          promql.lastShare_workername,
-          promql.lastShare_worker,
-          promql.lastShare_rig,
-          promql.lastShare_name
-        ]);
-        const lastSeries = lastPick.resp ? series(lastPick.resp) : [];
-
-        const bestEverResp = await promQuery(promql.workerBestEver);
-        const bestEverSeries = series(bestEverResp);
-        const bestEverMap = {};
-        for (let i = 0; i < bestEverSeries.length; i++) {
-          const m = bestEverSeries[i].metric || {};
-          const addr = m.btcaddress || "";
-          const w = getWorkerName(m);
-          const v = bestEverSeries[i].value ? parseFloat(bestEverSeries[i].value[1]) : NaN;
-          if (addr && w && isFinite(v)) bestEverMap[addr + "|" + w] = v;
-        }
-
-        const lastMap = {};
-        for (let i = 0; i < lastSeries.length; i++){
-          const metric = lastSeries[i].metric || {};
-          const addr = metric.btcaddress || "";
-          const w = getWorkerName(metric);
-          const t = lastSeries[i].value ? parseFloat(lastSeries[i].value[1]) : NaN;
-          if (!addr || !w || !isFinite(t)) continue;
-          lastMap[addr + "|" + w] = t;
-        }
-
+        // Static placeholder data for Operation Bitcoin demo
         const nowSec = Math.floor(Date.now() / 1000);
+        const placeholderUsers = [
+          { addr: "miner-alpha", totalHps: 35e12, workers: [
+            { name: "bitaxe-1", hps: 18e12, last: nowSec - 30, active: true, best: 5e9 },
+            { name: "bitaxe-2", hps: 17e12, last: nowSec - 45, active: true, best: 4.2e9 }
+          ]},
+          { addr: "miner-bravo", totalHps: 28e12, workers: [
+            { name: "s19-main", hps: 28e12, last: nowSec - 60, active: true, best: 8.1e9 }
+          ]},
+          { addr: "miner-charlie", totalHps: 22e12, workers: [
+            { name: "whatsminer-1", hps: 12e12, last: nowSec - 90, active: true, best: 3.5e9 },
+            { name: "whatsminer-2", hps: 10e12, last: nowSec - 120, active: true, best: 2.8e9 }
+          ]},
+          { addr: "miner-delta", totalHps: 15e12, workers: [
+            { name: "bitaxe-solo", hps: 15e12, last: nowSec - 40, active: true, best: 6e9 }
+          ]},
+          { addr: "miner-echo", totalHps: 10e12, workers: [
+            { name: "antminer-1", hps: 10e12, last: nowSec - 200, active: true, best: 2.1e9 }
+          ]},
+          { addr: "miner-foxtrot", totalHps: 8e12, workers: [
+            { name: "rig-1", hps: 8e12, last: nowSec - 150, active: true, best: 1.8e9 }
+          ]},
+          { addr: "miner-golf", totalHps: 4e12, workers: [
+            { name: "nerdminer-1", hps: 4e12, last: nowSec - 300, active: true, best: 0.9e9 }
+          ]},
+          { addr: "miner-hotel", totalHps: 2e12, workers: [
+            { name: "bitaxe-mini", hps: 2e12, last: nowSec - 500, active: true, best: 0.5e9 }
+          ]},
+          { addr: "miner-india", totalHps: 0.8e12, workers: [
+            { name: "solo-1", hps: 0.8e12, last: nowSec - 800, active: false, best: 0.2e9 }
+          ]},
+          { addr: "miner-juliet", totalHps: 0.4e12, workers: [
+            { name: "nerdminer-2", hps: 0.4e12, last: nowSec - 1200, active: false, best: 0.1e9 }
+          ]},
+          { addr: "miner-kilo", totalHps: 0.15e12, workers: [
+            { name: "bitaxe-test", hps: 0.15e12, last: nowSec - 1500, active: false, best: 0.05e9 }
+          ]},
+          { addr: "miner-lima", totalHps: 0.05e12, workers: [
+            { name: "experimental", hps: 0.05e12, last: nowSec - 2000, active: false, best: 0.02e9 }
+          ]}
+        ];
 
-        const users = {};
-
-        for (let i = 0; i < totalsSeries.length; i++){
-          const addr = totalsSeries[i].metric?.btcaddress || "";
-          const v = totalsSeries[i].value ? parseFloat(totalsSeries[i].value[1]) : NaN;
-          if (!addr || !isFinite(v)) continue;
-
-          if (!users[addr]) users[addr] = { addr: addr, totalHps: 0, workers: [] };
-          users[addr].totalHps = v;
-        }
-
-        for (let k = 0; k < workersSeries.length; k++){
-          const metric = workersSeries[k].metric || {};
-          const addr = metric.btcaddress || "";
-          const wName = getWorkerName(metric);
-          const v = workersSeries[k].value ? parseFloat(workersSeries[k].value[1]) : NaN;
-          if (!addr || !wName || !isFinite(v)) continue;
-
-          if (!users[addr]) users[addr] = { addr: addr, totalHps: 0, workers: [] };
-
-          const last = lastMap[addr + "|" + wName];
-          const active = isFinite(last) ? ((nowSec - last) <= 300) : (v > 0);
-          const best = bestEverMap[addr + "|" + wName];
-
-          users[addr].workers.push({ name: wName, hps: v, last: last, active: active, best: best });
-        }
-
-        const userList = [];
-        for (const a in users) userList.push(users[a]);
+        const userList = placeholderUsers.slice();
         userList.sort(function(a,b){ return b.totalHps - a.totalHps; });
 
         latestUserList = userList.slice();
@@ -3098,12 +3253,16 @@ callback: function(v){ return v.toLocaleString(undefined, {maximumFractionDigits
             if (userList[m].workers[w].active) workersOnlineNow++;
           }
         }
-        $("#workersOnline").text(fmtInt(workersOnlineNow));
+        // ACTIVE ASSETS — prefer DATUM proxy count, fall back to placeholder worker tally
+        const workerCount = (latestDatum && latestDatum.subscriptions != null)
+          ? latestDatum.subscriptions
+          : workersOnlineNow;
+        $("#workersOnline").text(fmtInt(workerCount));
 
         renderUsersList(latestUserList);
 
-        // Fetch and render difficulty leaderboard
-        fetchLeaderboard();
+        // TODO: Fetch and render difficulty leaderboard from live API
+        // fetchLeaderboard();
 
       } catch (e){
         $("#err").text("users/workers error: " + (e?.statusText || e?.message || "unknown"));
@@ -3113,23 +3272,19 @@ callback: function(v){ return v.toLocaleString(undefined, {maximumFractionDigits
     async function refreshTrend(){
       $("#err").text("");
 
+      // TODO: Replace placeholder trend data with live Hydrapool API calls
       try{
-        const end = Math.floor(Date.now() / 1000);
-        const start = end - (TREND_HOURS * 3600);
+        const end = Date.now();
+        const start = end - (TREND_HOURS * 3600 * 1000);
 
-        const resp = await promQueryRange(promql.hashrate5m, start, end, TREND_STEP_SECONDS);
-        const s = series(resp);
-        if (!s.length || !s[0].values || !s[0].values.length){
-          setTrendData([]);
-          return;
-        }
-
+        // Generate placeholder trend data (synthetic 6h of hashrate data)
         const raw = [];
-        for (let i = 0; i < s[0].values.length; i++){
-          const ts = s[0].values[i][0];
-          const v = parseFloat(s[0].values[i][1]);
-          if (!isFinite(v) || v < 0) continue;
-          raw.push({ t: ts * 1000, v: v });
+        const baseHash = 125e12; // 125 TH/s base
+        for (let t = start; t <= end; t += TREND_STEP_SECONDS * 1000) {
+          // Add some random variation ±15%
+          const noise = (Math.random() - 0.5) * 0.3 * baseHash;
+          const v = baseHash + noise;
+          raw.push({ t: t, v: Math.max(0, v) });
         }
 
         const smooth = weightedMovingAverage(raw);
@@ -3161,7 +3316,8 @@ callback: function(v){ return v.toLocaleString(undefined, {maximumFractionDigits
     async function fetchLeaderboard() {
       try {
         // Fetch pool queries + fallback API in parallel
-        const fallbackPromise = fetch("https://app.dplus.plus/api/bestShare").then(r => r.ok ? r.json() : null).catch(() => null);
+        // TODO: Replace with Operation Bitcoin leaderboard API endpoint
+        const fallbackPromise = fetch(HYDRAPOOL_API + "/bestShare").then(r => r.ok ? r.json() : null).catch(() => null);
         const [bestResp, workersResp, fallbackResp] = await Promise.all([
           $.get(PROM_BASE + "/api/v1/query?query=best_share_ever"),
           $.get(PROM_BASE + "/api/v1/query?query=topk(10,worker_best_share_ever)"),
@@ -3311,7 +3467,7 @@ callback: function(v){ return v.toLocaleString(undefined, {maximumFractionDigits
           $user.append(`
             <a href="${escapeHtml(twitterUrl)}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:10px;text-decoration:none;min-width:0;">
               <div style="position:relative;flex-shrink:0;">
-                <img src="${escapeHtml(avatarUrl)}" onerror="this.onerror=null; this.parentElement.innerHTML='<div style=\\'width:24px;height:24px;border-radius:50%;border:2px solid var(--accent);background:rgba(56,166,255,0.1);display:flex;align-items:center;justify-content:center;\\'><i class=\\'fa-brands fa-x-twitter\\' style=\\'font-size:10px;color:var(--accent);\\'></i></div>';"
+                <img src="${escapeHtml(avatarUrl)}" onerror="this.onerror=null; this.parentElement.innerHTML='<div style=\\'width:24px;height:24px;border-radius:50%;border:2px solid var(--accent);background:rgba(247,148,28,0.1);display:flex;align-items:center;justify-content:center;\\'><i class=\\'fa-brands fa-x-twitter\\' style=\\'font-size:10px;color:var(--accent);\\'></i></div>';"
                   style="width:24px;height:24px;border-radius:50%;border:2px solid var(--accent);object-fit:cover;">
               </div>
               <span class="lbUserName">${nameHtml}</span>
@@ -3507,7 +3663,7 @@ if (u.totalHps < 1e12) {
             addrHtml = `
               <a href="${escapeHtml(twitterUrl)}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
                 <div style="position:relative;flex-shrink:0;">
-                  <img src="${escapeHtml(avatarUrl)}" onerror="this.onerror=null; this.parentElement.innerHTML='<div style=\\'width:28px;height:28px;border-radius:50%;border:2px solid var(--accent);background:rgba(56,166,255,0.1);display:flex;align-items:center;justify-content:center;\\'><i class=\\'fa-brands fa-x-twitter\\' style=\\'font-size:12px;color:var(--accent);\\'></i></div><div style=\\'position:absolute;bottom:-2px;right:-2px;background:var(--accent);width:12px;height:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid #000;\\'><i class=\\'fa-solid fa-link\\' style=\\'font-size:6px;color:#fff;\\'></i></div>';"
+                  <img src="${escapeHtml(avatarUrl)}" onerror="this.onerror=null; this.parentElement.innerHTML='<div style=\\'width:28px;height:28px;border-radius:50%;border:2px solid var(--accent);background:rgba(247,148,28,0.1);display:flex;align-items:center;justify-content:center;\\'><i class=\\'fa-brands fa-x-twitter\\' style=\\'font-size:12px;color:var(--accent);\\'></i></div><div style=\\'position:absolute;bottom:-2px;right:-2px;background:var(--accent);width:12px;height:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid #000;\\'><i class=\\'fa-solid fa-link\\' style=\\'font-size:6px;color:#fff;\\'></i></div>';"
                     style="width:28px;height:28px;border-radius:50%;border:2px solid var(--accent);object-fit:cover;background:#000;display:block;">
                   <div style="position:absolute;bottom:-2px;right:-2px;background:var(--accent);width:12px;height:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid #000;">
                     <i class="fa-solid fa-link" style="font-size:6px;color:#fff;"></i>
@@ -3574,7 +3730,7 @@ if (u.totalHps < 1e12) {
                 <a href="${escapeHtml(userUrl)}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
                   <div style="position:relative;flex-shrink:0;">
                     <img src="${escapeHtml(faviconUrl)}" onerror="this.onerror=null; this.parentElement.innerHTML='<div style=\\'width:28px;height:28px;border-radius:50%;border:2px solid var(--accent);background:${background};display:flex;align-items:center;justify-content:center;\\'><i class=\\'fa-solid fa-globe\\' style=\\'font-size:12px;color:var(--accent);\\'></i></div><div style=\\'position:absolute;bottom:-2px;right:-2px;background:var(--accent);width:12px;height:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid #000;\\'><i class=\\'fa-solid fa-link\\' style=\\'font-size:6px;color:#fff;\\'></i></div>';"
-                      style="width:28px;height:28px;border-radius:50%;border:2px solid var(--accent);object-fit:contain;background-color:#07090b;display:block;padding:4px;box-sizing:border-box;">
+                      style="width:28px;height:28px;border-radius:50%;border:2px solid var(--accent);object-fit:contain;background-color:#0a0a0a;display:block;padding:4px;box-sizing:border-box;">
                     <div style="position:absolute;bottom:-2px;right:-2px;background:var(--accent);width:12px;height:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid #000;">
                       <i class="fa-solid fa-link" style="font-size:6px;color:#fff;"></i>
                     </div>
@@ -3935,12 +4091,12 @@ if (["GH/s", "MH/s", "KH/s", "H/s"].includes(wh.unit)) {
 
     function responsiveText() {
       const w = window.innerWidth;
-      if (w <= 390) $('#users-workers').text('USERS');
-      else if (w <= 490) $('#users-workers').text('WORKERS');
-      else $('#users-workers').text('USERS + WORKERS');
+      if (w <= 390) $('#users-workers').text('OPERATORS');
+      else if (w <= 490) $('#users-workers').text('OPERATORS');
+      else $('#users-workers').text('ACTIVE OPERATORS');
 
-      if (w < 500) $('#lbDiffHeader').text('Amount');
-      else $('#lbDiffHeader').text('Difficulty');
+      if (w < 500) $('#lbDiffHeader').text('BEST');
+      else $('#lbDiffHeader').text('BEST SHARE');
     }
     window.addEventListener('resize', responsiveText);
     responsiveText();
@@ -3949,6 +4105,119 @@ if (["GH/s", "MH/s", "KH/s", "H/s"].includes(wh.unit)) {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(() => {});
     }
+
+    // Radar sweep — JS-driven scan bar + node pings perfectly synced
+    (function initRadar() {
+      const bar = document.getElementById('page-scan-bar');
+      const svg = document.getElementById('world-map-svg');
+      if (!bar || !svg) return;
+
+      const DURATION = 14000; // ms per sweep
+      let startTime = null;
+
+      // Get the screen Y position of a node circle, accounting for SVG scaling/centering
+      function nodeScreenY(node) {
+        const r = svg.getBoundingClientRect();
+        const vb = svg.viewBox.baseVal;
+        const cy = parseFloat(node.getAttribute('cy'));
+        // xMidYMid meet: uniform scale = min(w/vbW, h/vbH)
+        const scale = Math.min(r.width / vb.width, r.height / vb.height);
+        const offsetY = (r.height - vb.height * scale) / 2;
+        return r.top + offsetY + cy * scale;
+      }
+
+      const nodes = [...svg.querySelectorAll('.map-node')];
+      const lastFired = new Map(); // node → timestamp last pinged
+
+      function triggerPing(node) {
+        node.classList.remove('pinging');
+        void node.getBoundingClientRect(); // force reflow to restart animation
+        node.classList.add('pinging');
+        node.addEventListener('animationend', () => node.classList.remove('pinging'), { once: true });
+      }
+
+      function tick(ts) {
+        if (!startTime) startTime = ts;
+        const elapsed = (ts - startTime) % DURATION;
+        const progress = elapsed / DURATION;
+        const scanY = progress * window.innerHeight;
+
+        // Move the bar
+        bar.style.transform = `translateY(${scanY}px)`;
+        bar.style.opacity = (progress < 0.02 || progress > 0.98) ? '0' : '1';
+
+        // Check each node
+        nodes.forEach(node => {
+          const ny = nodeScreenY(node);
+          const last = lastFired.get(node) || -Infinity;
+          // Fire when scan bar crosses node Y, debounce to once per sweep
+          if (scanY >= ny && scanY <= ny + 30 && (ts - last) > DURATION * 0.5) {
+            lastFired.set(node, ts);
+            triggerPing(node);
+          }
+        });
+
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
+    })();
+
+    // World map — load accurate land data from world-atlas (Natural Earth)
+    (function initWorldMap() {
+      const SVG_W = 1000, SVG_H = 500;
+      const svg = document.getElementById('world-map-svg');
+      if (!svg) return;
+
+      function project([lon, lat]) {
+        return [(lon + 180) / 360 * SVG_W, (90 - lat) / 180 * SVG_H];
+      }
+
+      // Clip to lat range to prevent Arctic/Antarctic coastlines from
+      // appearing as dominant horizontal lines in equirectangular projection.
+      const LAT_MAX = 67, LAT_MIN = -58;
+
+      function ringToD(ring) {
+        let d = '';
+        let penDown = false;
+        for (const [lon, lat] of ring) {
+          if (lat > LAT_MAX || lat < LAT_MIN) { penDown = false; continue; }
+          const [x, y] = project([lon, lat]);
+          d += (penDown ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1);
+          penDown = true;
+        }
+        // Only close ring if we rendered something and the ring wasn't clipped open
+        if (penDown) d += 'Z';
+        return d;
+      }
+
+      function renderLand(geojson) {
+        let d = '';
+        for (const f of geojson.features) {
+          const g = f.geometry;
+          const polys = g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
+          for (const poly of polys)
+            for (const ring of poly)
+              d += ringToD(ring);
+        }
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('class', 'land-path');
+        path.setAttribute('fill-rule', 'evenodd');
+        svg.insertBefore(path, svg.firstChild);
+      }
+
+      // Load topojson-client, then world-atlas land data
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js';
+      script.onload = () => {
+        fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json')
+          .then(r => r.json())
+          .then(world => renderLand(topojson.feature(world, world.objects.land)))
+          .catch(() => {});
+      };
+      document.head.appendChild(script);
+    })();
   </script>
 </body>
 </html>
