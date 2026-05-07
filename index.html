@@ -1363,7 +1363,7 @@
             <div class="kpiTile small">
               <i class="fa-solid fa-stopwatch kpiBgIcon"></i>
               <div class="kpiTileInner">
-                <div class="label"><i class="fa-solid fa-stopwatch"></i> SUSTAINED OUTPUT <span style="opacity:.5;font-size:.85em">(Avg Hashrate 1h)</span></div>
+                <div class="label"><i class="fa-solid fa-stopwatch"></i> SUSTAINED OUTPUT <span style="opacity:.5;font-size:.85em">(Avg Hashrate 3h)</span></div>
                 <div class="value"><span id="hash1h">—</span><span class="unit" id="hash1hUnit"></span></div>
               </div>
             </div>
@@ -3149,21 +3149,35 @@ callback: function(v){ return v.toLocaleString(undefined, {maximumFractionDigits
         $("#statusDot").toggleClass("bad", !online);
         $("#statusText").text(online ? "COMMS LIVE" : "COMMS DOWN");
 
-        // HASH POWER — live from DATUM proxy, fallback to placeholder
-        const hash5mHps = (latestDatum && latestDatum.hashrate != null)
-          ? latestDatum.hashrate * 1e12
-          : 125.4e12;
+        // HASH POWER — 5m average from history ring buffer (last 5 × 60s samples)
+        const hist = (latestDatum && latestDatum.history) ? latestDatum.history : [];
+        let hash5mHps;
+        if (hist.length > 0) {
+          const samples5m = hist.slice(-5);
+          const sum5m = samples5m.reduce((a, p) => a + (p.v || 0), 0);
+          hash5mHps = (sum5m / samples5m.length) * 1e12;
+        } else {
+          hash5mHps = (latestDatum && latestDatum.hashrate != null)
+            ? latestDatum.hashrate * 1e12
+            : 125.4e12;
+        }
 
         const hr = humanHashrateFromHps(hash5mHps);
         $("#hash5m").text(hr.value);
         $("#hash5mUnit").text(hr.unit);
 
-        // SUSTAINED OUTPUT — same source until 1h avg endpoint available
-        const hash1hTH = (latestDatum && latestDatum.hashrate != null)
-          ? latestDatum.hashrate
-          : 122.8;
-        if (isFinite(hash1hTH)){
-          const hr1 = humanHashrateFromHps(hash1hTH * 1e12);
+        // SUSTAINED OUTPUT — 3h average from full history ring buffer (up to 180 × 60s samples)
+        let hash3hHps;
+        if (hist.length > 0) {
+          const sum3h = hist.reduce((a, p) => a + (p.v || 0), 0);
+          hash3hHps = (sum3h / hist.length) * 1e12;
+        } else {
+          hash3hHps = (latestDatum && latestDatum.hashrate != null)
+            ? latestDatum.hashrate * 1e12
+            : 122.8e12;
+        }
+        if (isFinite(hash3hHps) && hash3hHps > 0) {
+          const hr1 = humanHashrateFromHps(hash3hHps);
           $("#hash1h").text(hr1.value);
           $("#hash1hUnit").text(hr1.unit);
         } else {
