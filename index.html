@@ -12,13 +12,13 @@
   <title>Operation Bitcoin • Mining Dashboard</title>
 
   <meta property="og:type" content="website">
-<meta property="og:url" content="https://telehash.operationbitcoin.io">
+<meta property="og:url" content="https://YOUR-POOL-DOMAIN">
 <meta property="og:title" content="Operation Bitcoin • Mining Dashboard">
 <meta property="og:description" content="Real-time hashrate visualizer and mining dashboard powered by Operation Bitcoin Hydrapool.">
 <meta property="og:image" content="og-image.jpg">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="https://telehash.operationbitcoin.io">
+<meta name="twitter:url" content="https://YOUR-POOL-DOMAIN">
 <meta name="twitter:title" content="Operation Bitcoin • Mining Dashboard">
 <meta name="twitter:description" content="Real-time hashrate visualizer and mining dashboard powered by Operation Bitcoin Hydrapool.">
 <meta name="twitter:image" content="og-image.jpg">
@@ -1465,8 +1465,8 @@
 
             <!-- TODO: Replace with live Operation Bitcoin Hydrapool stratum endpoint -->
             <div class="copyLabel">Point your hashrate to:</div>
-            <div class="copyField" data-copy="stratum+tcp://telehash.operationbitcoin.io:23334">
-              <span>stratum+tcp://telehash.operationbitcoin.io:23334</span>
+            <div class="copyField" data-copy="stratum+tcp://YOUR-POOL-DOMAIN:23334">
+              <span>stratum+tcp://YOUR-POOL-DOMAIN:23334</span>
               <i class="fa-regular fa-copy"></i>
             </div>
 
@@ -1486,14 +1486,14 @@
 
             <!-- TODO: Replace with Operation Bitcoin donation addresses -->
             <div class="copyLabel">Send bitcoin directly to:</div>
-            <div class="copyField" data-copy="bc1q0jrvnd4djk7zm2dvljqkpdaj5g5yllafl6utk2">
-              <span>bc1q0jrvnd4djk7zm2dvljqkpdaj5g5yllafl6utk2</span>
+            <div class="copyField" data-copy="YOUR_ONCHAIN_DONATION_ADDRESS">
+              <span>YOUR_ONCHAIN_DONATION_ADDRESS</span>
               <i class="fa-regular fa-copy"></i>
             </div>
 
             <div class="copyLabel" style="padding-top:10px">Or donate via Lightning to:</div>
-            <div class="copyField" data-copy="opbitcoin@strike.me">
-              <span>opbitcoin@strike.me</span>
+            <div class="copyField" data-copy="your-lightning-address@provider.com">
+              <span>your-lightning-address@provider.com</span>
               <i class="fa-regular fa-copy"></i>
             </div>
           </div>
@@ -1556,7 +1556,7 @@
     const background = "#0a0a0a"; // for favicons
 
     // TODO: Replace with live Operation Bitcoin Hydrapool endpoint
-    const HYDRAPOOL_API = 'https://telehash.operationbitcoin.io/api'; // placeholder
+    const HYDRAPOOL_API = 'https://YOUR-POOL-DOMAIN/api'; // placeholder
 
     // ---------------------------------------------------------------------------
     // DATUM proxy — fetches from ob-datum-proxy running on the same host
@@ -1582,7 +1582,7 @@
     // Refresh every 10s so data is fresh when the polling loop reads it
     fetchDatumStats();
     setInterval(fetchDatumStats, 10_000);
-    const HYDRAPOOL_WS  = 'wss://telehash.operationbitcoin.io/ws';    // placeholder
+    const HYDRAPOOL_WS  = 'wss://YOUR-POOL-DOMAIN/ws';    // placeholder
 
     // TODO: Replace with Operation Bitcoin Nostr pubkey
     const OB_POOL_PUBKEY = 'PLACEHOLDER_OB_NOSTR_PUBKEY';
@@ -2013,7 +2013,7 @@ async function resolveNIP05(fullname) {
     ========================= */
 
   // TODO: Replace with live Operation Bitcoin Hydrapool endpoint
-const PROM_BASE = HYDRAPOOL_API; // placeholder — was "https://pool.256foundation.org"
+const PROM_BASE = HYDRAPOOL_API; // set to your HydraPool API base URL
 
 
   
@@ -3296,7 +3296,7 @@ callback: function(v){ return v.toLocaleString(undefined, {maximumFractionDigits
           setPieData([]);
           $("#usersList").html(
             '<div style="text-align:center;padding:48px 0;color:var(--muted);font-family:var(--mono);font-size:0.85rem;letter-spacing:0.1em;">'
-            + 'NO OPERATORS CONNECTED<br><span style="font-size:0.75rem;opacity:0.5;margin-top:8px;display:block;">Point your miner to stratum+tcp://telehash.operationbitcoin.io:23334</span>'
+            + 'NO OPERATORS CONNECTED<br><span style="font-size:0.75rem;opacity:0.5;margin-top:8px;display:block;">Point your miner to stratum+tcp://YOUR-POOL-DOMAIN:23334</span>'
             + '</div>'
           );
           return;

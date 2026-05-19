@@ -947,7 +947,7 @@
       <div class="section no-border">
         <div class="section-title">Donate Hashrate</div>
         <div class="donate-box">
-          <div class="donate-url">stratum+tcp://pool.256foundation.org:3333</div>
+          <div class="donate-url">stratum+tcp://YOUR-POOL-DOMAIN:3333</div>
           <div class="donate-row">
             <div class="donate-hint">
               <span class="hint-label">stratum user:</span>
@@ -1022,7 +1022,7 @@ if (isPodMode) {
   document.querySelector('.goal-label').textContent = 'Goal';
 }
 
-fetch('https://dplusplus.me/images/video-placeholder.txt')
+fetch('YOUR_VIDEO_PLACEHOLDER_ENDPOINT')
   .then(r => r.text())
   .then(base64 => {
     document.getElementById('video-placeholder').src = `data:image/webp;base64,${base64.trim()}`;
@@ -1034,7 +1034,7 @@ if (isPodMode) {
   logoEl.onload = () => logoEl.classList.add('loaded');
   logoEl.src = 'Images/pod-logo.png';
 } else {
-  fetch('https://dplusplus.me/images/logo.txt')
+  fetch('YOUR_LOGO_ENDPOINT')
     .then(r => r.text())
     .then(base64 => {
       const logoEl = document.getElementById('logo-img');
@@ -1043,13 +1043,13 @@ if (isPodMode) {
     });
 }
 
-fetch('https://dplusplus.me/images/on-chain.txt')
+fetch('YOUR_ONCHAIN_QR_ENDPOINT')
   .then(r => r.text())
   .then(base64 => {
     document.getElementById('on-chain-placeholder').src = `data:image/webp;base64,${base64.trim()}`;
   });
 
-fetch('https://dplusplus.me/images/lightning.txt')
+fetch('YOUR_LIGHTNING_QR_ENDPOINT')
   .then(r => r.text())
   .then(base64 => {
     document.getElementById('lightning-placeholder').src = `data:image/webp;base64,${base64.trim()}`;
@@ -1059,7 +1059,7 @@ fetch('https://dplusplus.me/images/lightning.txt')
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
   <script>
     // const PROM_BASE = "https://bolt12.dplus.plus/256";
-    const PROM_BASE = "https://pool.256foundation.org";
+    const PROM_BASE = "https://YOUR-POOL-DOMAIN";
 
 
     const GOAL_BTC = 3.125;
@@ -1961,7 +1961,7 @@ fetch('https://dplusplus.me/images/lightning.txt')
 
     function pollLightningCache() {
       $.ajax({
-        url: 'https://dpluspl.us/api/lightningRead',
+        url: 'YOUR_LIGHTNING_API_ENDPOINT',
         method: 'GET',
         dataType: 'json'
       })
@@ -2020,7 +2020,7 @@ fetch('https://dplusplus.me/images/lightning.txt')
 
     function pollTelecache() {
       $.ajax({
-        url: 'https://dpluspl.us/api/telecacheRead',
+        url: 'YOUR_TELECACHE_API_ENDPOINT',
         method: 'GET',
         dataType: 'json',
         timeout: 15000

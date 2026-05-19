@@ -641,7 +641,7 @@
       <div class="section">
         <div class="section-title">Donate Hashrate</div>
         <div class="donate-box">
-          <div class="donate-url">tcp://pool.256foundation.org:3333</div>
+          <div class="donate-url">tcp://YOUR-POOL-DOMAIN:3333</div>
           <div class="donate-row">
             <div class="donate-hint">
               <span class="hint-label">stratum user:</span>
@@ -711,25 +711,25 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <script>
-fetch('https://dplusplus.me/images/video-placeholder.txt')
+fetch('YOUR_VIDEO_PLACEHOLDER_ENDPOINT')
   .then(r => r.text())
   .then(base64 => {
     document.getElementById('video-placeholder').src = `data:image/webp;base64,${base64.trim()}`;
   });
 
-fetch('https://dplusplus.me/images/logo.txt')
+fetch('YOUR_LOGO_ENDPOINT')
   .then(r => r.text())
   .then(base64 => {
     document.getElementById('logo-img').src = `data:image/webp;base64,${base64.trim()}`;
   });
 
-fetch('https://dplusplus.me/images/on-chain.txt')
+fetch('YOUR_ONCHAIN_QR_ENDPOINT')
   .then(r => r.text())
   .then(base64 => {
     document.getElementById('on-chain-placeholder').src = `data:image/webp;base64,${base64.trim()}`;
   });
 
-fetch('https://dplusplus.me/images/lightning.txt')
+fetch('YOUR_LIGHTNING_QR_ENDPOINT')
   .then(r => r.text())
   .then(base64 => {
     document.getElementById('lightning-placeholder').src = `data:image/webp;base64,${base64.trim()}`;
@@ -896,7 +896,7 @@ fetch('https://dplusplus.me/images/lightning.txt')
 
     function updateAllData() {
       // Get address transactions to count coinbase inputs (blocks found)
-      const ADDRESS = 'bc1qce93hy5rhg02s6aeu7mfdvxg76x66pqqtrvzs3';
+      const ADDRESS = 'YOUR_ONCHAIN_DONATION_ADDRESS';
       
       // Use the same API endpoint rotation as balance polling
       const TXS_ENDPOINTS = [
@@ -1077,7 +1077,7 @@ fetch('https://dplusplus.me/images/lightning.txt')
     }
     
     function pollChatMessages(dateStart) {
-      $.post('https://dpluspl.us/api/telehash', { address: 'donate@www.256f.org', dateStart: dateStart })
+      $.post('YOUR_TELEHASH_CACHE_API_ENDPOINT', { address: 'your-lightning-address@provider.com', dateStart: dateStart })
         .done(function(result) {
           if (result && result.length > 0) {
             for (let i = 0; i < result.length; i++) {
@@ -1122,7 +1122,7 @@ fetch('https://dplusplus.me/images/lightning.txt')
     }
     
     function pollAddressBalance() {
-      const ADDRESS = 'bc1qce93hy5rhg02s6aeu7mfdvxg76x66pqqtrvzs3';
+      const ADDRESS = 'YOUR_ONCHAIN_DONATION_ADDRESS';
       const apiUrl = API_ENDPOINTS[currentApiIndex] + ADDRESS;
       
       // Poll on-chain balance
@@ -1172,8 +1172,8 @@ fetch('https://dplusplus.me/images/lightning.txt')
         });
       
       // Poll Lightning balance
-      const lightningAddress = 'donate@www.256f.org';
-      $.post('https://dpluspl.us/api/checkInvStatus', { address: lightningAddress })
+      const lightningAddress = 'your-lightning-address@provider.com';
+      $.post('YOUR_LIGHTNING_INV_CHECK_ENDPOINT', { address: lightningAddress })
         .done(function(result) {
           let amount = 0;
           if (result && result.length > 0) {
