@@ -1,6 +1,6 @@
 # OB Telehash Dashboard
 
-Real-time hashrate visualizer and mining dashboard for the **Operation Bitcoin Telehash** — a group mining event where participants donate hashrate to the mission.
+Real-time hashrate visualizer and mining dashboard built for coordinated Bitcoin mining events (Telehashes). Tracks connected operators, live hashrate, and pool stats in real time.
 
 Built on top of [Hashdash](https://github.com/dplusplus1024/hashdash) by [D++](https://github.com/dplusplus1024).
 
@@ -8,7 +8,7 @@ Built on top of [Hashdash](https://github.com/dplusplus1024/hashdash) by [D++](h
 
 ## What Is a Telehash?
 
-A Telehash is a coordinated Bitcoin mining event hosted by Operation Bitcoin. Participants point their mining hardware at the OB pool for the duration of the event. Every hash mined is a direct contribution to the mission — educating veterans, service members, and their families about financial sovereignty through Bitcoin.
+A Telehash is a coordinated group mining event where participants point their hardware at a shared pool for a set period of time. Anyone can run one. The idea is simple: instead of mining solo or with a private pool, participants voluntarily redirect their hashrate to a common cause for the duration of the event. The dashboard tracks who is connected, how much hashrate they are contributing, and displays live stats for the group as a whole.
 
 ---
 
@@ -58,15 +58,17 @@ During a Telehash event, miners connect to:
 
 Worker format: `npub1yourid.minername`
 
+Dashboard: `https://YOUR-POOL-DOMAIN`
+
 ---
 
 ## Stack
 
-- Pure HTML/CSS/JS — no framework, no build tools
-- [nostr-tools](https://github.com/nbd-wtf/nostr-tools) — Nostr profile resolution
-- [Primal API](https://primal.net) — fast Nostr profile caching
-- jQuery + Chart.js — UI + charts
-- PWA-ready (service worker + manifest)
+- Pure HTML/CSS/JS with no framework and no build tools
+- [nostr-tools](https://github.com/nbd-wtf/nostr-tools) for Nostr profile resolution
+- [Primal API](https://primal.net) for fast Nostr profile caching
+- jQuery and Chart.js for UI and charts
+- PWA ready with service worker and manifest
 - Deployable on Vercel, GitHub Pages, or any static host
 
 ---
