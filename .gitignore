@@ -1,0 +1,22 @@
+# Local utility scripts (contain machine-specific paths)
+export-cards.js
+
+# Dev / scratch files (not part of the deployed app)
+dashtest.html
+fix.html
+test.html
+old-teledash.html
+source.html
+
+# Generated print artifacts
+telehash-md26-front.pdf
+telehash-md26-back.pdf
+telehash-md26-both.pdf
+telehash-md26-front.png
+telehash-md26-back.png
+
+# Node
+node_modules/
+
+# OS
+.DS_Store

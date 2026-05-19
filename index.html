@@ -8,6 +8,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
   <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Real-time hashrate visualizer and mining dashboard powered by Operation Bitcoin Hydrapool.">
   <title>Operation Bitcoin • Mining Dashboard</title>
 
   <meta property="og:type" content="website">
@@ -34,8 +35,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="OB Dashboard">
-  <!-- TODO: Replace with Operation Bitcoin logo -->
-  <link rel="apple-touch-icon" href="https://i.imgur.com/Fiot6qk.png">
+  <link rel="apple-touch-icon" href="OpBitLogoRound.png">
 
   <style>
     :root{
@@ -97,6 +97,13 @@
     }
     .top::after {
       content: none;
+    }
+    .shc-logo-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
     }
 
     .logo{
@@ -533,6 +540,7 @@
       background: rgba(255,255,255,.08);
       border-radius: 99px;
       position: relative;
+      overflow: hidden;
       transition: background 0.2s ease, border-color 0.2s ease;
       border: 1px solid rgba(255,255,255,.15);
     }
@@ -1137,6 +1145,24 @@
       .list { margin-top: -20px; }
 
       /* .chicToggle { display:none; }  */
+      .chicToggle .track {
+        width: 14px !important;
+        height: 14px !important;
+        min-width: 14px !important;
+        min-height: 14px !important;
+        border-radius: 50% !important;
+        background: rgba(255,255,255,.15);
+        border: 2px solid rgba(255,255,255,.25);
+        transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .chicToggle .thumb {
+        display: none;
+      }
+      .chicToggle input:checked + .track {
+        background: var(--accent);
+        border-color: var(--accent);
+        box-shadow: 0 0 6px var(--accent);
+      }
 
       #filterReset { display: none; }
 
@@ -1146,6 +1172,13 @@
         gap: 12px;
         padding: 16px 0 12px;
         margin-bottom: 22px;
+      }
+      .shc-logo-center {
+        position: static !important;
+        transform: none !important;
+        width: 100%;
+        display: flex;
+        justify-content: center;
       }
 
       /* Resized Logo */
@@ -1337,6 +1370,11 @@
           <div class="subtitle">Mining Command Center</div>
         </div>
       </a>
+      <div class="shc-logo-center">
+        <a href="https://sovereignhybridcompute.com" target="_blank" rel="noopener noreferrer">
+          <img src="Images/shc.png" alt="Sovereign Hybrid Compute" style="height:60px;width:auto;opacity:0.9;filter:brightness(0) invert(1);transition:opacity 0.2s;display:block;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.9">
+        </a>
+      </div>
       <div class="status-block">
         <span class="pill" id="pill-status"><span id="statusDot" class="dot pulse"></span><span id="statusText">ESTABLISHING...</span></span>
         <span class="pill" id="lastUpdate" style="font-family:var(--mono);font-size:.7rem">LAST PING: —</span>
@@ -3166,9 +3204,25 @@ callback: function(v){ return v.toLocaleString(undefined, {maximumFractionDigits
         $("#hash5m").text(hr.value);
         $("#hash5mUnit").text(hr.unit);
 
-        // SUSTAINED OUTPUT — 3h average from full history ring buffer (up to 180 × 60s samples)
+        // SUSTAINED OUTPUT — sum of Ocean's per-worker hash3hr values.
+        // Ocean computes the true 3hr average per worker on their end, so summing
+        // those gives a more accurate pool-wide 3hr figure than our local history
+        // ring buffer (which gets skewed when hashrate changes mid-window).
         let hash3hHps;
-        if (hist.length > 0) {
+        const oceanWorkersForHash = (latestDatum && latestDatum.workers) ? latestDatum.workers : [];
+        const sum3hFromOcean = oceanWorkersForHash.reduce((acc, w) => {
+          if (!w.hash3hr) return acc;
+          const m = w.hash3hr.match(/([\d.]+)\s*(T|G|P|E|M|K)?h\/s/i);
+          if (!m) return acc;
+          const val = parseFloat(m[1]);
+          const unit = (m[2] || '').toLowerCase();
+          const mult = { e: 1e18, p: 1e15, t: 1e12, g: 1e9, m: 1e6, k: 1e3 };
+          return acc + val * (mult[unit] || 1);
+        }, 0);
+        if (sum3hFromOcean > 0) {
+          hash3hHps = sum3hFromOcean;
+        } else if (hist.length > 0) {
+          // Fallback: history ring buffer average
           const sum3h = hist.reduce((a, p) => a + (p.v || 0), 0);
           hash3hHps = (sum3h / hist.length) * 1e12;
         } else {
@@ -3279,9 +3333,11 @@ callback: function(v){ return v.toLocaleString(undefined, {maximumFractionDigits
             }
             const hps60 = parseHps(w.hash60s);
             const hps3h = parseHps(w.hash3hr);
-            // Option B: always prefer 3hr avg as primary rate — stable and accurate for all
-            // miner sizes (Bitaxes to S19s). Fall back to 60s only if no 3hr data yet.
-            const hps = hps3h || hps60;
+            // Use 60s for miners actively hashing above 1 TH/s (real-time for high-hashrate ASICs).
+            // Fall back to 3hr for small miners (BitAxes, etc.) where the 60s window is often
+            // zero between share submissions, which would make them appear offline or flatline.
+            const HPS_REALTIME_THRESHOLD = 10e12; // 10 TH/s
+            const hps = (hps60 >= HPS_REALTIME_THRESHOLD) ? hps60 : (hps3h || hps60);
             // livePulse = shares actively coming in right now (60s window has data)
             const livePulse = hps60 > 0;
             if (!operatorMap.has(operator)) {
@@ -4215,8 +4271,7 @@ if (["GH/s", "MH/s", "KH/s", "H/s"].includes(wh.unit)) {
 
     function responsiveText() {
       const w = window.innerWidth;
-      if (w <= 390) $('#users-workers').text('OPERATORS');
-      else if (w <= 490) $('#users-workers').text('OPERATORS');
+      if (w <= 280) $('#users-workers').text('OPERATORS');
       else $('#users-workers').text('ACTIVE OPERATORS');
 
       if (w < 500) $('#lbDiffHeader').text('BEST');
