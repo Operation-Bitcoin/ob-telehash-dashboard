@@ -54,8 +54,7 @@ During a Telehash event, miners connect to:
 
 | Protocol | Endpoint |
 |---|---|
-| Stratum V1 | `stratum+tcp://telehash.operationbitcoin.io:23334` |
-| Stratum V2 | `stratum+tcp://telehash.operationbitcoin.io:34255` |
+| Stratum V1 | `stratum+tcp://YOUR-POOL-DOMAIN:23334` |
 
 Worker format: `npub1yourid.minername`
 
